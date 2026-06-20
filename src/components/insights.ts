@@ -3,7 +3,12 @@
  * 현재는 UI 형태만 — 목 데이터. 추후 연동 소스의 실제 피드로 교체.
  */
 
-export type InsightPlatform = "geeknews" | "linkedin" | "instagram" | "facebook";
+export type InsightPlatform =
+  | "tickettaco"
+  | "geeknews"
+  | "linkedin"
+  | "instagram"
+  | "facebook";
 
 export interface InsightItem {
   id: string;
@@ -21,12 +26,17 @@ export interface InsightItem {
   /** 가벼운 인게이지먼트 지표 (선택) */
   likes?: number;
   comments?: number;
+  /** 최상단 고정 홍보물 여부 (강조 스타일 + 배지) */
+  pinned?: boolean;
+  /** 고정/이벤트 카드에 표시할 짧은 배지 라벨 (선택) */
+  badge?: string;
 }
 
 export const PLATFORM_META: Record<
   InsightPlatform,
   { label: string; color: string; mark: string }
 > = {
+  tickettaco: { label: "티켓타코", color: "#e69500", mark: "TT" },
   geeknews: { label: "GeekNews", color: "#16a34a", mark: "GN" },
   linkedin: { label: "LinkedIn", color: "#0a66c2", mark: "in" },
   instagram: { label: "Instagram", color: "#e1306c", mark: "IG" },
@@ -39,6 +49,45 @@ const iso = (minsAgo: number) =>
 /** 형태 확인용 목 인사이트 피드. */
 export function getInsightFeed(): InsightItem[] {
   return [
+    {
+      id: "promo-lipcoding-2026",
+      platform: "tickettaco",
+      author: "천하제일 입코딩 대회",
+      handle: "ticketa.co",
+      text: "🎤 Voice Coding Hackathon with GitHub Copilot — 보이스 코딩으로 앱을 만들어 봅시다. 📅 2026.06.20(토) 🕐 09:00–18:00 📍 서울 광화문",
+      hasMedia: true,
+      url: "https://ticketa.co/event/z49uyhx8",
+      postedAt: iso(2),
+      likes: 2026,
+      comments: 128,
+      pinned: true,
+      badge: "📣 진행 중",
+    },
+    {
+      id: "tt-copilot-devdays",
+      platform: "tickettaco",
+      author: "GitHub Copilot Dev Days by .NET Dev",
+      handle: "티켓타코 · 이벤트",
+      text: "GitHub Copilot으로 더 빠르게 개발하는 실전 노하우. .NET 개발자 커뮤니티가 준비한 핸즈온 데이.",
+      url: "https://ticketa.co/event/lx8g330a",
+      postedAt: iso(40),
+      likes: 412,
+      comments: 33,
+      badge: "이벤트",
+    },
+    {
+      id: "tt-devfest-ai",
+      platform: "tickettaco",
+      author: "AI × Reality — Google DevFest 2025 in Daejeon",
+      handle: "티켓타코 · 이벤트",
+      text: "만들고, 기여하고, 활용하다. AI를 현실에 연결하는 개발자 컨퍼런스 — 티켓 예매 오픈.",
+      hasMedia: true,
+      url: "https://ticketa.co/event/fj2sm9xc",
+      postedAt: iso(150),
+      likes: 286,
+      comments: 19,
+      badge: "이벤트",
+    },
     {
       id: "i1",
       platform: "geeknews",
