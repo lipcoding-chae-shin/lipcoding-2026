@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
+/* ===== Linear design tokens (see docs/design.md) ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Deep dark canvas + surface ladder */
+  --canvas: #010102;
+  --surface: #0f1011;     /* surface-1 — cards */
+  --surface-2: #141516;   /* surface-2 — lifted/selected */
+  --surface-3: #18191a;   /* surface-3 — nested */
+
+  /* Text */
+  --ink: #f7f8f8;
+  --muted: #d0d6e0;
+  --faint: #8a8f98;
+  --tertiary: #62666d;
+
+  /* Hairlines */
+  --line: #23252a;
+  --line-strong: #34343a;
+
+  /* Single chromatic accent: Linear lavender-blue */
+  --accent: #5e6ad2;
+  --accent-hover: #828fff;
+  --accent-focus: #5e69d1;
+  --accent-ink: #ffffff;
+  --accent-weak: rgba(94, 106, 210, 0.16);
+
+  /* Restrained semantics (single-accent discipline) */
+  --task: #9aa4f2;        /* lighter lavender for "action needed" */
+  --task-bg: #141516;
+  --info: #8a8f98;
+  --info-bg: #141516;
+  --ok: #27a644;
+  --danger: #e5484d;
+}
+
+/* ===== Light theme (Linear inverse tokens) ===== */
+:root[data-theme="light"] {
+  --canvas: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f6f6;
+  --surface-3: #ededef;
+
+  --ink: #08090a;
+  --muted: #3c4149;
+  --faint: #6b7280;
+  --tertiary: #9ca3af;
+
+  --line: #e6e7eb;
+  --line-strong: #d5d7dd;
+
+  --accent: #5e6ad2;
+  --accent-hover: #4d59c6;
+  --accent-focus: #5e69d1;
+  --accent-ink: #ffffff;
+  --accent-weak: rgba(94, 106, 210, 0.1);
+
+  --task: #4f46e5;
+  --task-bg: #eef0fb;
+  --info: #6b7280;
+  --info-bg: #f0f1f3;
+  --ok: #1d8a4e;
+  --danger: #d70015;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-tertiary: var(--tertiary);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-focus: var(--accent-focus);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-weak: var(--accent-weak);
+
+  --color-task: var(--task);
+  --color-task-bg: var(--task-bg);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-ok: var(--ok);
+  --color-danger: var(--danger);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
+/* Deep dark canvas, light text. No gradients. */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: var(--canvas);
+  color-scheme: dark;
+  font-family: var(--font-geist-sans), -apple-system, system-ui, sans-serif;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.05px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+:root[data-theme="light"] body {
+  color-scheme: light;
+}
+
+/* Linear "measured negative tracking" on headlines */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+/* ===== Surfaces — ladder + hairline, no shadow ===== */
+
+/* Card panel (surface-1) */
+.surface {
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+/* Frosted sticky nav — canvas tint + blur, hairline divider */
+.surface-frosted {
+  background: color-mix(in srgb, var(--canvas) 72%, transparent);
+  backdrop-filter: saturate(150%) blur(16px);
+  -webkit-backdrop-filter: saturate(150%) blur(16px);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Console panel — stays dark in both themes (terminal aesthetic) */
+.surface-dark {
+  background: #141516;
+  border: 1px solid #2a2a2c;
+}
+
+/* Subtle lift for the floating toast (Linear resists shadows; keep minimal) */
+.rest-shadow {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Active press micro-interaction */
+.press:active {
+  transform: scale(0.97);
+}
+
+/* Focus ring — 2px lavender */
+.focusable:focus-visible {
+  outline: 2px solid var(--accent-focus);
+  outline-offset: 2px;
+}
+
+/* ---- Scrollbars ---- */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 99px;
+}
+
+/* ---- Motion ---- */
+@keyframes trace-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.trace-line { animation: trace-in 0.28s ease-out both; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+.live-dot { animation: pulse-dot 1.1s ease-in-out infinite; }
+
+/* ---- Accessibility ---- */
+@media (prefers-reduced-motion: reduce) {
+  .trace-line, .live-dot { animation: none; }
+  .press:active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .surface-frosted {
+    background: var(--canvas);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }
