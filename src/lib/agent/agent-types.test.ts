@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isTagKind } from "./types";
+import { isTagKind } from "./agent-types";
 
 describe("isTagKind", () => {
   it("accepts Task and Info", () => {

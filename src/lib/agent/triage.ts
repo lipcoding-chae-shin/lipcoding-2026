@@ -1,22 +1,15 @@
 import { CopilotClient } from "@github/copilot-sdk";
 import { azureProvider, azureModel } from "./copilot";
 import { createCollector, createTriageTools } from "./tools";
-import type { FeedItem, TriageResponse } from "../types";
+import type { RawItem } from "../sources/raw";
+import type { TriageResult, AgentTodo } from "./agent-types";
 
-export function githubMcpServers() {
-  const token = process.env.GITHUB_MCP_TOKEN;
-  if (!token) return undefined;
-  return {
-    github: {
-      type: "http" as const,
-      url: "https://api.githubcopilot.com/mcp/",
-      headers: { Authorization: `Bearer ${token}` },
-      tools: ["*"],
-    },
-  };
+export interface TriageRunResult {
+  results: TriageResult[];
+  todos: AgentTodo[];
 }
 
-export function buildTriagePrompt(items: FeedItem[], withGithub = false): string {
+export function buildTriagePrompt(items: RawItem[], withGithub = false): string {
   const lines = items.map(
     (it) =>
       `- id=${it.id} | source=${it.source} | from=${it.author} | title: ${it.title}\n    body: ${it.body}`
@@ -43,10 +36,23 @@ export function buildTriagePrompt(items: FeedItem[], withGithub = false): string
   ].join("\n");
 }
 
+export function githubMcpServers() {
+  const token = process.env.GITHUB_MCP_TOKEN;
+  if (!token) return undefined;
+  return {
+    github: {
+      type: "http" as const,
+      url: "https://api.githubcopilot.com/mcp/",
+      headers: { Authorization: `Bearer ${token}` },
+      tools: ["*"],
+    },
+  };
+}
+
 export async function runTriage(
-  items: FeedItem[],
+  items: RawItem[],
   onDelta?: (text: string) => void
-): Promise<TriageResponse> {
+): Promise<TriageRunResult> {
   const collector = createCollector();
   const client = new CopilotClient();
   try {
@@ -75,9 +81,6 @@ export async function runTriage(
       (it) =>
         collector.results.get(it.id) ?? { itemId: it.id, summary: "", tag: "Info" as const }
     ),
-    todos: collector.todos.map((t) => {
-      const item = items.find((i) => i.id === t.itemId);
-      return { ...t, sourceUrl: item?.url };
-    }),
+    todos: collector.todos,
   };
 }

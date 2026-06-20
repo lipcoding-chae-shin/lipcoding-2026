@@ -1,5 +1,5 @@
 import { google } from "googleapis";
-import type { FeedItem } from "../types";
+import type { RawItem } from "./raw";
 
 export const GMAIL_SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
 
@@ -20,7 +20,7 @@ function header(msg: GmailMessageLike, name: string): string {
   return h?.value ?? "";
 }
 
-export function gmailItemsFromMessages(messages: GmailMessageLike[]): FeedItem[] {
+export function gmailItemsFromMessages(messages: GmailMessageLike[]): RawItem[] {
   return messages.map((msg) => {
     const id = msg.id ?? crypto.randomUUID();
     const dateStr = header(msg, "Date");
@@ -48,7 +48,7 @@ export function oauthClient() {
   );
 }
 
-export async function fetchGmailFeed(accessToken: string | undefined): Promise<FeedItem[]> {
+export async function fetchGmailFeed(accessToken: string | undefined): Promise<RawItem[]> {
   if (!accessToken) return [];
   const auth = oauthClient();
   auth.setCredentials({ access_token: accessToken });

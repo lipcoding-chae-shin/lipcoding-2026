@@ -1,14 +1,14 @@
 import type { NextRequest } from "next/server";
 import { runTriage } from "@/lib/agent/triage";
-import type { FeedItem } from "@/lib/types";
+import type { RawItem } from "@/lib/sources/raw";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  let items: FeedItem[] = [];
+  let items: RawItem[] = [];
   try {
-    const parsed = (await req.json()) as { items?: FeedItem[] };
+    const parsed = (await req.json()) as { items?: RawItem[] };
     items = parsed.items ?? [];
   } catch {
     return new Response(JSON.stringify({ message: "invalid JSON body" }), {

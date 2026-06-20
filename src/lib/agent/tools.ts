@@ -1,9 +1,9 @@
 import { defineTool } from "@github/copilot-sdk";
-import { isTagKind, type TagKind, type TriageResult, type Todo } from "../types";
+import { isTagKind, type TagKind, type TriageResult, type AgentTodo } from "./agent-types";
 
 export interface TriageCollector {
   results: Map<string, TriageResult>;
-  todos: Todo[];
+  todos: AgentTodo[];
 }
 
 export function createCollector(): TriageCollector {

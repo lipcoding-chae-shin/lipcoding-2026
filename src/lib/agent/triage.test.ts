@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { buildTriagePrompt, githubMcpServers } from "./triage";
-import type { FeedItem } from "../types";
+import type { RawItem } from "../sources/raw";
 
-const items: FeedItem[] = [
+const items: RawItem[] = [
   { id: "a1", source: "news", title: "T1", body: "B1", author: "x", receivedAt: "2026-06-20T00:00:00.000Z" },
 ];
 

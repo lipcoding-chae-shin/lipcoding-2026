@@ -15,3 +15,9 @@ export function azureProvider() {
 export function azureModel(): string {
   return process.env.AZURE_OPENAI_DEPLOYMENT ?? "gpt-4o-mini";
 }
+
+/** True when Azure OpenAI is configured. Used to choose the live agent path
+ * vs. the offline canned-summary fallback without throwing. */
+export function isAzureConfigured(): boolean {
+  return Boolean(process.env.AZURE_OPENAI_ENDPOINT && process.env.AZURE_OPENAI_API_KEY);
+}
