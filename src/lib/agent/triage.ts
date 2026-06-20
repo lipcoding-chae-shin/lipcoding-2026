@@ -49,6 +49,16 @@ export function githubMcpServers() {
   };
 }
 
+export const TRIAGE_SYSTEM_MESSAGE = [
+  "You are a productivity triage assistant.",
+  "You MUST use the provided tools to record your work — do not just describe what you would do.",
+  "For EACH feed item, in order:",
+  "1. Call summarize_item with a concise one-sentence summary (keep the item's language).",
+  "2. Call tag_item with 'Task' if the user must take an action, otherwise 'Info'.",
+  "3. If and only if you tagged it 'Task', call create_todo with a short actionable title.",
+  "Process every item exactly once. Do not skip any item. Do not invent items.",
+].join("\n");
+
 export async function runTriage(
   items: RawItem[],
   onDelta?: (text: string) => void
@@ -57,11 +67,20 @@ export async function runTriage(
   const client = new CopilotClient();
   try {
     const mcpServers = githubMcpServers();
+    const availableTools = [
+      "summarize_item",
+      "tag_item",
+      "create_todo",
+      ...(mcpServers ? ["mcp:*"] : []),
+    ];
     const session = await client.createSession({
       model: azureModel(),
       streaming: true,
       provider: azureProvider(),
       tools: createTriageTools(collector),
+      availableTools,
+      systemMessage: { mode: "replace", content: TRIAGE_SYSTEM_MESSAGE },
+      skipCustomInstructions: true,
       ...(mcpServers ? { mcpServers } : {}),
     });
 
@@ -71,7 +90,10 @@ export async function runTriage(
       });
     }
 
-    await session.sendAndWait({ prompt: buildTriagePrompt(items, Boolean(mcpServers)) });
+    await session.sendAndWait(
+      { prompt: buildTriagePrompt(items, Boolean(mcpServers)) },
+      300_000
+    );
   } finally {
     await client.stop();
   }

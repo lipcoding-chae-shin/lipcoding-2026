@@ -1,6 +1,6 @@
 export function azureProvider() {
   const baseUrl = process.env.AZURE_OPENAI_ENDPOINT;
-  const apiKey = process.env.AZURE_OPENAI_API_KEY;
+  const apiKey = azureApiKey();
   if (!baseUrl || !apiKey) {
     throw new Error("AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY are required");
   }
@@ -12,6 +12,11 @@ export function azureProvider() {
   };
 }
 
+/** Azure OpenAI key. Accepts AZURE_OPENAI_API_KEY (canonical) or AZURE_OPENAI_KEY (alias). */
+function azureApiKey(): string | undefined {
+  return process.env.AZURE_OPENAI_API_KEY ?? process.env.AZURE_OPENAI_KEY;
+}
+
 export function azureModel(): string {
   return process.env.AZURE_OPENAI_DEPLOYMENT ?? "gpt-4o-mini";
 }
@@ -19,5 +24,5 @@ export function azureModel(): string {
 /** True when Azure OpenAI is configured. Used to choose the live agent path
  * vs. the offline canned-summary fallback without throwing. */
 export function isAzureConfigured(): boolean {
-  return Boolean(process.env.AZURE_OPENAI_ENDPOINT && process.env.AZURE_OPENAI_API_KEY);
+  return Boolean(process.env.AZURE_OPENAI_ENDPOINT && azureApiKey());
 }
