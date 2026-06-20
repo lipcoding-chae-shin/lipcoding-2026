@@ -1,0 +1,22 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+build/
+.next/
+out/
+
+# env / secrets  ← 절대 커밋 금지
+.env
+.env.*
+!.env.example
+*.local
+
+# azure / azd
+.azure/
+
+# logs / os
+*.log
+.DS_Store
