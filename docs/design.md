@@ -23,34 +23,30 @@
 ## 3. 토큰
 
 ### 배경 (유리가 비칠 캔버스)
-은은한 컬러 그라데이션 메시 — 유리의 굴절이 보이도록.
+**밝은 화이트 톤 + 아주 옅은 컬러 틴트** — 배경은 차분하게, 유리 자체의 엣지/그림자/블러로 글래스를 드러낸다.
 ```
---bg-base:  #eef1f6
---blob-1:   rgba(99,102,241,0.18)   /* indigo  */
---blob-2:   rgba(14,165,233,0.16)   /* sky     */
---blob-3:   rgba(236,72,153,0.10)   /* pink    */
+--bg-base: #eef1f7   /* 밝은 회백 */
+blobs: indigo / sky / pink (opacity 0.07~0.10, 거의 은은한 틴트)
 ```
 
 ### 유리 표면
 ```
---glass:        rgba(255,255,255,0.60)   backdrop-blur(20px) saturate(180%)
---glass-strong: rgba(255,255,255,0.72)
---glass-dark:   rgba(20,22,28,0.55)      /* 트레이스 콘솔 */
---glass-border: rgba(255,255,255,0.55)   /* 밝은 렌즈 보더 */
---glass-hi:     rgba(255,255,255,0.85)   /* 상단 스펙큘러 */
---glass-shadow: 0 8px 30px rgba(17,21,28,0.10)
+--glass:        white 0.45~0.70 그라데이션, blur(22px) saturate(180%)
+--glass-strong: white 0.60~0.82 그라데이션, blur(28px) saturate(190%)
+--glass-dark:   navy 0.60~0.78 그라데이션 (트레이스 콘솔)
+엣지: ::before 상단 스펙큘러 광택 + ::after 1px 밝은 굴절 보더(inset)
+그림자: 0 8~10px 28~34px rgba(17,21,28,0.10) (떠 있는 깊이감)
 ```
 
-### 콘텐츠 색 (시맨틱 · 적응형)
+### 콘텐츠 색 (시맨틱 · 적응형, 라이트 배경 위 어두운 텍스트)
 ```
---ink:    #1d1d1f   /* 주요 텍스트 (Apple label)   */
---muted:  #5b6573   /* 보조 텍스트                 */
---faint:  #8b94a3   /* 캡션                        */
---accent: #0a6cff   /* 시스템 블루 (주요 액션)      */
---accent-weak: rgba(10,108,255,0.12)
---task:   #b45309 / bg rgba(245,158,11,0.16)   /* 행동 필요 */
---info:   #475569 / bg rgba(71,85,105,0.12)    /* 참고      */
+--ink:    #1d1d1f   /* 주요 텍스트 (Apple label) */
+--muted:  #545b66   /* 보조        */
+--faint:  #8a93a3   /* 캡션        */
+--accent: #0a6cff   /* 시스템 블루  */
+--task:   #b45309 (bg amber 0.16)   --info: #475569 (bg slate 0.12)
 --ok:     #15803d   --danger: #be123c
+입력 필드는 bg-white/70 + 어두운 텍스트로 유리톤 유지.
 ```
 
 ## 4. 형태 & 타이포
