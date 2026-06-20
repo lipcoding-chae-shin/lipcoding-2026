@@ -1,0 +1,12 @@
+.git
+.github
+node_modules
+.next
+.azure
+.env
+.env.*
+!.env.example
+npm-debug.log*
+.DS_Store
+.playwright-cli
+*.md

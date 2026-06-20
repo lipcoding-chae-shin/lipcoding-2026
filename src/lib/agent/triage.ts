@@ -1,5 +1,5 @@
-import { CopilotClient } from "@github/copilot-sdk";
-import { azureProvider, azureModel } from "./copilot";
+import { CopilotClient, RuntimeConnection } from "@github/copilot-sdk";
+import { azureProvider, azureModel, copilotCliPath } from "./copilot";
 import { createCollector, createTriageTools } from "./tools";
 import type { RawItem } from "../sources/raw";
 import type { TriageResult, AgentTodo } from "./agent-types";
@@ -64,7 +64,13 @@ export async function runTriage(
   onDelta?: (text: string) => void
 ): Promise<TriageRunResult> {
   const collector = createCollector();
-  const client = new CopilotClient();
+  // Explicitly resolve the bundled CLI: the SDK's own resolver fails under
+  // Next.js, which would silently disable the agent. Falls back to SDK
+  // default when not found (non-Next.js runtimes).
+  const cliPath = copilotCliPath();
+  const client = new CopilotClient(
+    cliPath ? { connection: RuntimeConnection.forStdio({ path: cliPath }) } : undefined
+  );
   try {
     const mcpServers = githubMcpServers();
     const availableTools = [
