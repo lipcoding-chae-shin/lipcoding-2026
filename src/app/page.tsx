@@ -1,22 +1,51 @@
 "use client";
 
-import { useRef, useState } from "react";
-import type { FeedItem, SubscribedSource, Todo } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
+import type {
+  FeedItem,
+  FeedResponse,
+  SubscribedSource,
+  Todo,
+} from "@/lib/types";
 import SubscribeBar from "@/components/SubscribeBar";
 import FeedList from "@/components/FeedList";
 import TodoPanel from "@/components/TodoPanel";
 import InsightFeed from "@/components/InsightFeed";
 import ThemeToggle from "@/components/ThemeToggle";
-import { SOURCES, getRawFeed } from "@/components/mock";
+import { SOURCES } from "@/components/mock";
 import { getInsightFeed } from "@/components/insights";
 
 export default function Page() {
   const [sources, setSources] = useState<SubscribedSource[]>(SOURCES);
-  const [feed] = useState<FeedItem[]>(getRawFeed);
+  const [feed, setFeed] = useState<FeedItem[]>([]);
+  const [feedLoading, setFeedLoading] = useState(true);
+  const [feedError, setFeedError] = useState<string | null>(null);
   const [insights] = useState(getInsightFeed);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [undo, setUndo] = useState<{ todo: Todo; index: number } | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/feed", { cache: "no-store" });
+        if (!res.ok) throw new Error(`피드를 불러오지 못했어요 (HTTP ${res.status})`);
+        const data: FeedResponse = await res.json();
+        if (!cancelled) {
+          setFeed(data.items);
+          setFeedError(null);
+        }
+      } catch (err) {
+        if (!cancelled) setFeedError((err as Error).message);
+      } finally {
+        if (!cancelled) setFeedLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
 
   const connected = new Set(
@@ -93,7 +122,11 @@ export default function Page() {
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-semibold text-ink">신호 피드</h2>
             <span className="text-xs text-faint">
-              {untriaged > 0 ? `${untriaged}건 미분류` : "모두 분류됨"}
+              {feedLoading
+                ? "불러오는 중…"
+                : untriaged > 0
+                  ? `${untriaged}건 미분류`
+                  : "모두 분류됨"}
             </span>
             <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-faint">
               <span className="size-1.5 rounded-full bg-ok" aria-hidden />
@@ -101,8 +134,21 @@ export default function Page() {
             </span>
           </div>
 
-          <div className="scroll-thin min-h-0 max-h-[55vh] overflow-y-auto pr-1 lg:max-h-none lg:flex-1">
-            <FeedList items={visibleFeed} onCreateTodo={createTodo} />
+          <div className="scroll-thin min-h-0 pr-1 lg:flex-1 lg:overflow-y-auto">
+            {feedError ? (
+              <div className="grid place-items-center rounded-xl border border-dashed border-line py-16 text-center">
+                <p className="text-sm text-muted">{feedError}</p>
+                <p className="mt-1 text-xs text-faint">
+                  잠시 후 다시 시도해 주세요.
+                </p>
+              </div>
+            ) : feedLoading ? (
+              <div className="grid place-items-center rounded-xl border border-dashed border-line py-16 text-center">
+                <p className="text-sm text-muted">신호를 불러오는 중…</p>
+              </div>
+            ) : (
+              <FeedList items={visibleFeed} onCreateTodo={createTodo} />
+            )}
           </div>
         </section>
 
