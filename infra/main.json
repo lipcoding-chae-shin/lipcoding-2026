@@ -1,0 +1,390 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.44.1.10279",
+      "templateHash": "6769722730378409877"
+    }
+  },
+  "parameters": {
+    "environmentName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "metadata": {
+        "description": "Name of the azd environment — used to derive resource names."
+      }
+    },
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "metadata": {
+        "description": "Primary location for all resources."
+      }
+    },
+    "azureOpenAiEndpoint": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "azureOpenAiApiKey": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "azureOpenAiDeployment": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "azureOpenAiApiVersion": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "githubMcpToken": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "googleClientId": {
+      "type": "string",
+      "defaultValue": ""
+    },
+    "googleClientSecret": {
+      "type": "securestring",
+      "defaultValue": ""
+    },
+    "googleRedirectUri": {
+      "type": "string",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "tags": {
+      "azd-env-name": "[parameters('environmentName')]"
+    },
+    "resourceToken": "[toLower(uniqueString(subscription().id, parameters('environmentName'), parameters('location')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2024-03-01",
+      "name": "[format('rg-{0}', parameters('environmentName'))]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "resources",
+      "resourceGroup": "[format('rg-{0}', parameters('environmentName'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "resourceToken": {
+            "value": "[variables('resourceToken')]"
+          },
+          "azureOpenAiEndpoint": {
+            "value": "[parameters('azureOpenAiEndpoint')]"
+          },
+          "azureOpenAiApiKey": {
+            "value": "[parameters('azureOpenAiApiKey')]"
+          },
+          "azureOpenAiDeployment": {
+            "value": "[parameters('azureOpenAiDeployment')]"
+          },
+          "azureOpenAiApiVersion": {
+            "value": "[parameters('azureOpenAiApiVersion')]"
+          },
+          "githubMcpToken": {
+            "value": "[parameters('githubMcpToken')]"
+          },
+          "googleClientId": {
+            "value": "[parameters('googleClientId')]"
+          },
+          "googleClientSecret": {
+            "value": "[parameters('googleClientSecret')]"
+          },
+          "googleRedirectUri": {
+            "value": "[parameters('googleRedirectUri')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.44.1.10279",
+              "templateHash": "8213729395035248794"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Primary location for all resources."
+              }
+            },
+            "tags": {
+              "type": "object",
+              "metadata": {
+                "description": "Tags applied to every resource."
+              }
+            },
+            "resourceToken": {
+              "type": "string",
+              "metadata": {
+                "description": "Unique token used to name globally-unique resources."
+              }
+            },
+            "azureOpenAiEndpoint": {
+              "type": "string"
+            },
+            "azureOpenAiApiKey": {
+              "type": "securestring"
+            },
+            "azureOpenAiDeployment": {
+              "type": "string"
+            },
+            "azureOpenAiApiVersion": {
+              "type": "string"
+            },
+            "githubMcpToken": {
+              "type": "securestring"
+            },
+            "googleClientId": {
+              "type": "string"
+            },
+            "googleClientSecret": {
+              "type": "securestring"
+            },
+            "googleRedirectUri": {
+              "type": "string"
+            }
+          },
+          "variables": {
+            "serviceName": "web",
+            "appPort": 3000,
+            "acrPullRoleId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', '7f951dda-4ed3-4680-a7ca-43fe172d538d')]"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2023-09-01",
+              "name": "[format('log-{0}', parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "retentionInDays": 30
+              }
+            },
+            {
+              "type": "Microsoft.ContainerRegistry/registries",
+              "apiVersion": "2023-11-01-preview",
+              "name": "[format('acr{0}', parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "sku": {
+                "name": "Basic"
+              },
+              "properties": {
+                "adminUserEnabled": false
+              }
+            },
+            {
+              "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+              "apiVersion": "2023-01-31",
+              "name": "[format('id-{0}', parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]"
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[resourceId('Microsoft.ContainerRegistry/registries', format('acr{0}', parameters('resourceToken')))]",
+              "name": "[guid(resourceId('Microsoft.ContainerRegistry/registries', format('acr{0}', parameters('resourceToken'))), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('resourceToken'))), variables('acrPullRoleId'))]",
+              "properties": {
+                "roleDefinitionId": "[variables('acrPullRoleId')]",
+                "principalId": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('resourceToken'))), '2023-01-31').principalId]",
+                "principalType": "ServicePrincipal"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.ContainerRegistry/registries', format('acr{0}', parameters('resourceToken')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.App/managedEnvironments",
+              "apiVersion": "2024-03-01",
+              "name": "[format('cae-{0}', parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "appLogsConfiguration": {
+                  "destination": "log-analytics",
+                  "logAnalyticsConfiguration": {
+                    "customerId": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', format('log-{0}', parameters('resourceToken'))), '2023-09-01').customerId]",
+                    "sharedKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', format('log-{0}', parameters('resourceToken'))), '2023-09-01').primarySharedKey]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', format('log-{0}', parameters('resourceToken')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.App/containerApps",
+              "apiVersion": "2024-03-01",
+              "name": "[format('ca-{0}-{1}', variables('serviceName'), parameters('resourceToken'))]",
+              "location": "[parameters('location')]",
+              "tags": "[union(parameters('tags'), createObject('azd-service-name', variables('serviceName')))]",
+              "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                  "[format('{0}', resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('resourceToken'))))]": {}
+                }
+              },
+              "properties": {
+                "managedEnvironmentId": "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('resourceToken')))]",
+                "configuration": {
+                  "activeRevisionsMode": "Single",
+                  "ingress": {
+                    "external": true,
+                    "targetPort": "[variables('appPort')]",
+                    "transport": "auto",
+                    "allowInsecure": false
+                  },
+                  "registries": [
+                    {
+                      "server": "[format('{0}.azurecr.io', format('acr{0}', parameters('resourceToken')))]",
+                      "identity": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('resourceToken')))]"
+                    }
+                  ],
+                  "secrets": [
+                    {
+                      "name": "azure-openai-api-key",
+                      "value": "[parameters('azureOpenAiApiKey')]"
+                    },
+                    {
+                      "name": "github-mcp-token",
+                      "value": "[parameters('githubMcpToken')]"
+                    },
+                    {
+                      "name": "google-client-secret",
+                      "value": "[parameters('googleClientSecret')]"
+                    }
+                  ]
+                },
+                "template": {
+                  "containers": [
+                    {
+                      "name": "[variables('serviceName')]",
+                      "image": "mcr.microsoft.com/azuredocs/containerapps-helloworld:latest",
+                      "resources": {
+                        "cpu": "[json('0.5')]",
+                        "memory": "1.0Gi"
+                      },
+                      "env": [
+                        {
+                          "name": "PORT",
+                          "value": "[string(variables('appPort'))]"
+                        },
+                        {
+                          "name": "AZURE_OPENAI_ENDPOINT",
+                          "value": "[parameters('azureOpenAiEndpoint')]"
+                        },
+                        {
+                          "name": "AZURE_OPENAI_API_KEY",
+                          "secretRef": "azure-openai-api-key"
+                        },
+                        {
+                          "name": "AZURE_OPENAI_DEPLOYMENT",
+                          "value": "[parameters('azureOpenAiDeployment')]"
+                        },
+                        {
+                          "name": "AZURE_OPENAI_API_VERSION",
+                          "value": "[parameters('azureOpenAiApiVersion')]"
+                        },
+                        {
+                          "name": "GITHUB_MCP_TOKEN",
+                          "secretRef": "github-mcp-token"
+                        },
+                        {
+                          "name": "GOOGLE_CLIENT_ID",
+                          "value": "[parameters('googleClientId')]"
+                        },
+                        {
+                          "name": "GOOGLE_CLIENT_SECRET",
+                          "secretRef": "google-client-secret"
+                        },
+                        {
+                          "name": "GOOGLE_REDIRECT_URI",
+                          "value": "[parameters('googleRedirectUri')]"
+                        }
+                      ]
+                    }
+                  ],
+                  "scale": {
+                    "minReplicas": 1,
+                    "maxReplicas": 3
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.App/managedEnvironments', format('cae-{0}', parameters('resourceToken')))]",
+                "[resourceId('Microsoft.ContainerRegistry/registries', format('acr{0}', parameters('resourceToken')))]",
+                "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', format('id-{0}', parameters('resourceToken')))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "AZURE_CONTAINER_REGISTRY_ENDPOINT": {
+              "type": "string",
+              "value": "[format('{0}.azurecr.io', format('acr{0}', parameters('resourceToken')))]"
+            },
+            "WEB_URI": {
+              "type": "string",
+              "value": "[format('https://{0}', reference(resourceId('Microsoft.App/containerApps', format('ca-{0}-{1}', variables('serviceName'), parameters('resourceToken'))), '2024-03-01').configuration.ingress.fqdn)]"
+            },
+            "SERVICE_WEB_NAME": {
+              "type": "string",
+              "value": "[format('ca-{0}-{1}', variables('serviceName'), parameters('resourceToken'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', format('rg-{0}', parameters('environmentName')))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "AZURE_LOCATION": {
+      "type": "string",
+      "value": "[parameters('location')]"
+    },
+    "AZURE_CONTAINER_REGISTRY_ENDPOINT": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'resources'), '2025-04-01').outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT.value]"
+    },
+    "WEB_URI": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'resources'), '2025-04-01').outputs.WEB_URI.value]"
+    },
+    "SERVICE_WEB_NAME": {
+      "type": "string",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, format('rg-{0}', parameters('environmentName'))), 'Microsoft.Resources/deployments', 'resources'), '2025-04-01').outputs.SERVICE_WEB_NAME.value]"
+    }
+  }
+}
