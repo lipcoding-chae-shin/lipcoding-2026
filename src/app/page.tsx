@@ -103,9 +103,9 @@ export default function Page() {
   };
 
   return (
-    <div className="flex h-dvh flex-col">
-      <header className="border-b border-line bg-surface/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3">
+    <div className="flex min-h-dvh flex-col lg:h-dvh">
+      <header className="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-5">
           <div className="flex items-baseline gap-2">
             <h1 className="text-lg font-bold tracking-tight text-ink">Triage</h1>
             <span className="hidden text-xs text-faint sm:inline">
@@ -118,7 +118,7 @@ export default function Page() {
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-6xl flex-1 grid-cols-1 gap-5 overflow-hidden px-5 py-5 lg:grid-cols-[1.55fr_1fr]">
+      <main className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-5 px-4 py-4 sm:px-5 sm:py-5 lg:flex-1 lg:grid-cols-[1.55fr_1fr] lg:overflow-hidden">
         <section className="flex min-h-0 flex-col gap-3">
           <div className="flex items-center gap-3">
             <h2 className="text-sm font-semibold text-ink">신호 피드</h2>
@@ -149,12 +149,12 @@ export default function Page() {
 
           <StreamingTrace events={trace} running={running} />
 
-          <div className="scroll-thin min-h-0 flex-1 overflow-y-auto pr-1">
+          <div className="scroll-thin min-h-0 pr-1 lg:flex-1 lg:overflow-y-auto">
             <FeedList items={visibleFeed} onCreateTodo={createTodo} />
           </div>
         </section>
 
-        <aside className="flex min-h-0 flex-col rounded-2xl border border-line bg-surface-2 p-4">
+        <aside className="flex min-h-[45vh] flex-col rounded-2xl border border-line bg-surface-2 p-4 lg:min-h-0">
           <TodoPanel
             todos={todos}
             onToggle={toggleTodo}
