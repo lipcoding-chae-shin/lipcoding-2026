@@ -14,6 +14,13 @@ describe("buildTriagePrompt", () => {
     expect(p).toContain("create_todo");
     expect(p).toContain("id=a1");
   });
+
+  it("includes the Task/Info rubric and GitHub relationship guidance", () => {
+    const p = buildTriagePrompt(items);
+    expect(p).toContain("Tagging rubric");
+    expect(p).toContain("relationship=review-requested");
+    expect(p).toContain("relationship=assignee");
+  });
 });
 
 describe("githubMcpServers", () => {

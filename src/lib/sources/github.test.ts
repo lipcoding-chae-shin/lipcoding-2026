@@ -42,4 +42,24 @@ describe("githubItemsFromSearch", () => {
     expect(items[0].author).toBe("github");
     expect(items[0].url).toBe("https://github.com/acme/app");
   });
+
+  it("encodes the relationship signal and a body snippet for triage", () => {
+    const items = githubItemsFromSearch(
+      [
+        {
+          id: 303,
+          number: 9,
+          title: "Add retry to feed fetch",
+          repository_url: "https://api.github.com/repos/acme/app",
+          state: "open",
+          body: "Could you review this when you get a chance?\n\nThanks!",
+          pull_request: { url: "x" },
+        },
+      ],
+      "review-requested"
+    );
+    expect(items[0].body).toBe(
+      "PR · open · relationship=review-requested — Could you review this when you get a chance? Thanks!"
+    );
+  });
 });
