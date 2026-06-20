@@ -9,6 +9,24 @@ export interface TriageRunResult {
   todos: AgentTodo[];
 }
 
+/**
+ * Shared Task-vs-Info rubric injected into both the prompt body and the
+ * system message. Without this, the model defaults almost everything to
+ * 'Info' — especially GitHub items, whose `relationship=` body signal it
+ * would otherwise ignore.
+ */
+export const CLASSIFICATION_GUIDANCE = [
+  "Tagging rubric — decide who is expected to act next:",
+  "- 'Task': the USER must personally do something (reply, review, decide, fix, approve, attend).",
+  "- 'Info': FYI only — no action needed, or someone else owns the next step, or it is just a status/notification/newsletter.",
+  "For GitHub items, the `relationship=` field in the body is the strongest signal:",
+  "- relationship=review-requested → the user owes a code review → almost always 'Task'.",
+  "- relationship=assignee → the user owns this issue/PR → almost always 'Task'.",
+  "- relationship=mentioned → usually 'Info', unless the body clearly asks the user to act.",
+  "- relationship=author → the user's own open item waiting on others → usually 'Info', unless it is blocked on the user.",
+  "When the body text explicitly requests an action from the user, prefer 'Task' regardless of source.",
+].join("\n");
+
 export function buildTriagePrompt(items: RawItem[], withGithub = false): string {
   const lines = items.map(
     (it) =>
@@ -29,6 +47,8 @@ export function buildTriagePrompt(items: RawItem[], withGithub = false): string 
     "2. Call tag_item with 'Task' if the user must take an action, otherwise 'Info'.",
     "3. If and only if you tagged it 'Task', call create_todo with a short actionable title.",
     "Process every item exactly once. Do not skip any item. Do not invent items.",
+    "",
+    CLASSIFICATION_GUIDANCE,
     "",
     "Feed items:",
     ...lines,
@@ -57,6 +77,8 @@ export const TRIAGE_SYSTEM_MESSAGE = [
   "2. Call tag_item with 'Task' if the user must take an action, otherwise 'Info'.",
   "3. If and only if you tagged it 'Task', call create_todo with a short actionable title.",
   "Process every item exactly once. Do not skip any item. Do not invent items.",
+  "",
+  CLASSIFICATION_GUIDANCE,
 ].join("\n");
 
 export interface TriageOptions {
