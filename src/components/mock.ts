@@ -7,9 +7,8 @@
 import type { FeedItem, SubscribedSource, TraceEvent } from "@/lib/types";
 
 export const SOURCES: SubscribedSource[] = [
-  { source: "gmail", label: "Gmail", connected: true },
-  { source: "github", label: "GitHub", connected: true },
-  { source: "news", label: "사내 뉴스", connected: false },
+  { id: "seed-gmail", source: "gmail", label: "Gmail", connected: true },
+  { id: "seed-github", source: "github", label: "GitHub", connected: true },
 ];
 
 const iso = (minsAgo: number) => new Date(Date.now() - minsAgo * 60_000).toISOString();
@@ -43,11 +42,11 @@ export function getRawFeed(): FeedItem[] {
   },
   {
     id: "f3",
-    source: "news",
-    title: "전사 공지: 다음 주 수요일 사내 시스템 점검",
+    source: "github",
+    title: "Discussion #57 — 다음 스프린트 범위 합의 필요",
     summary: "",
     tag: null,
-    url: "https://intra.example.com/n3",
+    url: "https://github.com/example/repo/discussions/57",
     receivedAt: iso(46),
     triaged: false,
   },
@@ -78,7 +77,7 @@ export function getRawFeed(): FeedItem[] {
 const TRIAGE_RESULT: Record<string, { summary: string; tag: FeedItem["tag"] }> = {
   f1: { summary: "6월 클라우드 사용료 결제 마감 안내. 기한 내 확인 필요.", tag: "Task" },
   f2: { summary: "빈 소스에서 피드 라우트가 500을 반환하는 버그 리뷰 요청.", tag: "Task" },
-  f3: { summary: "다음 주 수요일 사내 시스템 점검 일정 공지. 참고만.", tag: "Info" },
+  f3: { summary: "다음 스프린트 범위 합의가 필요한 논의. 의견 작성 필요.", tag: "Task" },
   f4: { summary: "디자인 시안 최종 확인 회신 요청. 답장 필요.", tag: "Task" },
   f5: { summary: "토큰 갱신 이슈가 해결되어 종료됨. 참고만.", tag: "Info" },
 };
