@@ -1,22 +1,18 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { FeedItem, SubscribedSource, TraceEvent, Todo } from "@/lib/types";
+import type { FeedItem, SubscribedSource, Todo } from "@/lib/types";
 import SubscribeBar from "@/components/SubscribeBar";
 import FeedList from "@/components/FeedList";
 import TodoPanel from "@/components/TodoPanel";
-import StreamingTrace from "@/components/StreamingTrace";
 import ThemeToggle from "@/components/ThemeToggle";
-import { SOURCES, getRawFeed, runTriageStream } from "@/components/mock";
+import { SOURCES, getRawFeed } from "@/components/mock";
 
 export default function Page() {
   const [sources, setSources] = useState<SubscribedSource[]>(SOURCES);
-  const [feed, setFeed] = useState<FeedItem[]>(getRawFeed);
+  const [feed] = useState<FeedItem[]>(getRawFeed);
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [trace, setTrace] = useState<TraceEvent[]>([]);
-  const [running, setRunning] = useState(false);
   const [undo, setUndo] = useState<{ todo: Todo; index: number } | null>(null);
-  const cancelRef = useRef<{ cancelled: boolean } | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
@@ -33,30 +29,6 @@ export default function Page() {
       ),
     );
 
-  const pushTrace = (e: TraceEvent) => setTrace((prev) => [...prev, e]);
-  const applyItem = (item: FeedItem) =>
-    setFeed((prev) => prev.map((i) => (i.id === item.id ? item : i)));
-
-  const runTriage = async () => {
-    if (running) return;
-    const signal = { cancelled: false };
-    cancelRef.current = signal;
-    setRunning(true);
-    setTrace([]);
-    await runTriageStream(
-      feed.filter((i) => connected.has(i.source)),
-      pushTrace,
-      applyItem,
-      signal,
-    );
-    if (!signal.cancelled) setRunning(false);
-  };
-
-  const stopTriage = () => {
-    if (cancelRef.current) cancelRef.current.cancelled = true;
-    setRunning(false);
-  };
-
   const createTodo = (item: FeedItem, text: string) => {
     const todo: Todo = {
       id: crypto.randomUUID(),
@@ -66,13 +38,6 @@ export default function Page() {
       createdAt: new Date().toISOString(),
     };
     setTodos((prev) => [todo, ...prev]);
-    pushTrace({
-      id: crypto.randomUUID(),
-      itemId: item.id,
-      kind: "todo",
-      text: `할 일 생성: "${text.slice(0, 30)}"`,
-      at: new Date().toISOString(),
-    });
   };
 
   const toggleTodo = (id: string) =>
@@ -127,29 +92,11 @@ export default function Page() {
             <span className="text-xs text-faint">
               {untriaged > 0 ? `${untriaged}건 미분류` : "모두 분류됨"}
             </span>
-            <div className="ml-auto">
-              {running ? (
-                <button
-                  type="button"
-                  onClick={stopTriage}
-                  className="press focusable rounded-lg border border-line bg-surface px-4 py-1.5 text-sm font-medium text-muted transition hover:text-ink"
-                >
-                  중지
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={runTriage}
-                  disabled={untriaged === 0}
-                  className="press focusable rounded-lg bg-accent px-5 py-1.5 text-sm font-medium text-accent-ink transition hover:bg-accent-hover disabled:opacity-40"
-                >
-                  AI 트리아지 실행
-                </button>
-              )}
-            </div>
+            <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-faint">
+              <span className="size-1.5 rounded-full bg-ok" aria-hidden />
+              자동 동기화
+            </span>
           </div>
-
-          <StreamingTrace events={trace} running={running} />
 
           <div className="scroll-thin min-h-0 pr-1 lg:flex-1 lg:overflow-y-auto">
             <FeedList items={visibleFeed} onCreateTodo={createTodo} />
