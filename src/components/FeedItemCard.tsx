@@ -25,7 +25,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
 
   return (
     <article
-      className="rounded-xl border border-line bg-surface p-3.5 shadow-sm transition hover:shadow"
+      className="glass rounded-2xl p-3.5 transition hover:shadow-[0_12px_40px_rgba(17,21,28,0.14)]"
       style={{ borderLeft: `3px solid ${meta.color}` }}
     >
       <header className="flex items-center gap-2 text-xs text-faint">
@@ -98,7 +98,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
             onChange={(e) => setDraft(e.target.value)}
             rows={2}
             autoFocus
-            className="mt-1.5 w-full resize-none rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent"
+            className="mt-1.5 w-full resize-none rounded-md border border-line bg-white/70 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent"
           />
           <div className="mt-2 flex justify-end gap-2">
             <button

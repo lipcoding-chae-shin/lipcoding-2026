@@ -1,33 +1,38 @@
 @import "tailwindcss";
 
-/* ---- Triage Console design tokens ---- */
+/* ===== Liquid Glass design tokens (see docs/design.md) ===== */
 :root {
-  --canvas: #f4f5f8; /* cool paper app background */
-  --surface: #ffffff; /* panels & cards */
-  --surface-2: #fbfbfd; /* nested surfaces */
-  --ink: #11151c; /* primary text */
-  --muted: #5b6573; /* secondary text */
-  --faint: #8b94a3; /* tertiary / captions */
-  --line: #e4e7ec; /* hairline borders */
+  --bg-base: #eef1f6;
+  --blob-1: rgba(99, 102, 241, 0.18);
+  --blob-2: rgba(14, 165, 233, 0.16);
+  --blob-3: rgba(236, 72, 153, 0.10);
 
-  --accent: #4338ca; /* indigo — primary action */
+  --glass: rgba(255, 255, 255, 0.6);
+  --glass-strong: rgba(255, 255, 255, 0.72);
+  --glass-dark: rgba(20, 22, 28, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-hi: rgba(255, 255, 255, 0.85);
+  --glass-shadow: 0 8px 30px rgba(17, 21, 28, 0.1);
+
+  --ink: #1d1d1f;
+  --muted: #5b6573;
+  --faint: #8b94a3;
+  --line: rgba(17, 21, 28, 0.08);
+
+  --accent: #0a6cff;
   --accent-ink: #ffffff;
-  --accent-weak: #eef0ff;
+  --accent-weak: rgba(10, 108, 255, 0.12);
 
-  /* semantic tags */
-  --task: #b45309; /* amber — needs action */
-  --task-bg: #fef3c7;
-  --info: #475569; /* slate — fyi */
-  --info-bg: #eef2f6;
+  --task: #b45309;
+  --task-bg: rgba(245, 158, 11, 0.16);
+  --info: #475569;
+  --info-bg: rgba(71, 85, 105, 0.12);
 
   --ok: #15803d;
   --danger: #be123c;
 }
 
 @theme inline {
-  --color-canvas: var(--canvas);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-faint: var(--faint);
@@ -52,24 +57,60 @@ body {
 }
 
 body {
-  background: var(--canvas);
   color: var(--ink);
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  background-color: var(--bg-base);
+  background-image:
+    radial-gradient(60rem 60rem at 12% -8%, var(--blob-1), transparent 60%),
+    radial-gradient(50rem 50rem at 108% 12%, var(--blob-2), transparent 60%),
+    radial-gradient(45rem 45rem at 70% 110%, var(--blob-3), transparent 60%);
+  background-attachment: fixed;
 }
 
+/* ---- Glass surfaces ---- */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-hi);
+}
+.glass-strong {
+  background: var(--glass-strong);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px 0 var(--glass-hi);
+}
+.glass-dark {
+  background: var(--glass-dark);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ---- Scrollbars ---- */
 .scroll-thin {
   scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
+  scrollbar-color: rgba(17, 21, 28, 0.18) transparent;
 }
 .scroll-thin::-webkit-scrollbar {
   width: 8px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  background: var(--line);
+  background: rgba(17, 21, 28, 0.16);
   border-radius: 99px;
 }
 
+/* ---- Motion ---- */
 @keyframes trace-in {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
@@ -82,6 +123,13 @@ body {
 }
 .live-dot { animation: pulse-dot 1.1s ease-in-out infinite; }
 
+/* ---- Accessibility ---- */
 @media (prefers-reduced-motion: reduce) {
   .trace-line, .live-dot { animation: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .glass { background: #ffffff; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .glass-strong { background: #ffffff; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .glass-dark { background: #16181c; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  body { background-image: none; }
 }

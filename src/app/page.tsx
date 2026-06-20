@@ -104,7 +104,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-dvh flex-col lg:h-dvh">
-      <header className="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur">
+      <header className="glass-strong sticky top-0 z-20 rounded-none border-x-0 border-t-0">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-5">
           <div className="flex items-baseline gap-2">
             <h1 className="text-lg font-bold tracking-tight text-ink">Triage</h1>
@@ -130,7 +130,7 @@ export default function Page() {
                 <button
                   type="button"
                   onClick={stopTriage}
-                  className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-muted hover:text-ink"
+                  className="glass rounded-full px-3.5 py-1.5 text-sm font-medium text-muted hover:text-ink"
                 >
                   중지
                 </button>
@@ -139,7 +139,7 @@ export default function Page() {
                   type="button"
                   onClick={runTriage}
                   disabled={untriaged === 0}
-                  className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-accent-ink transition hover:opacity-90 disabled:opacity-40"
+                  className="rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-accent-ink shadow-[0_4px_14px_rgba(10,108,255,0.35)] transition hover:opacity-90 disabled:opacity-40 disabled:shadow-none"
                 >
                   AI 트리아지 실행
                 </button>
@@ -154,7 +154,7 @@ export default function Page() {
           </div>
         </section>
 
-        <aside className="flex min-h-[45vh] flex-col rounded-2xl border border-line bg-surface-2 p-4 lg:min-h-0">
+        <aside className="glass flex min-h-[45vh] flex-col rounded-3xl p-4 lg:min-h-0">
           <TodoPanel
             todos={todos}
             onToggle={toggleTodo}
@@ -166,7 +166,7 @@ export default function Page() {
 
       {undo && (
         <div className="pointer-events-none fixed inset-x-0 bottom-5 flex justify-center">
-          <div className="pointer-events-auto flex items-center gap-3 rounded-full bg-ink px-4 py-2 text-sm text-white shadow-lg">
+          <div className="glass-dark pointer-events-auto flex items-center gap-3 rounded-full px-4 py-2 text-sm text-white">
             <span>할 일을 삭제했어요</span>
             <button
               type="button"

@@ -32,7 +32,7 @@ export default function StreamingTrace({ events, running }: Props) {
   }, [events.length]);
 
   return (
-    <section className="overflow-hidden rounded-xl border border-line bg-[#0e1116] shadow-sm">
+    <section className="glass-dark overflow-hidden rounded-2xl">
       <header className="flex items-center gap-2 border-b border-white/5 px-3.5 py-2">
         <span
           className={`size-2 rounded-full ${
