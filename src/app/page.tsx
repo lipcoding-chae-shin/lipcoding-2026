@@ -6,6 +6,7 @@ import SubscribeBar from "@/components/SubscribeBar";
 import FeedList from "@/components/FeedList";
 import TodoPanel from "@/components/TodoPanel";
 import StreamingTrace from "@/components/StreamingTrace";
+import ThemeToggle from "@/components/ThemeToggle";
 import { SOURCES, getRawFeed, runTriageStream } from "@/components/mock";
 
 export default function Page() {
@@ -104,7 +105,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-dvh flex-col lg:h-dvh">
-      <header className="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur">
+      <header className="surface-frosted sticky top-0 z-20">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-5">
           <div className="flex items-baseline gap-2">
             <h1 className="text-lg font-bold tracking-tight text-ink">Triage</h1>
@@ -112,8 +113,9 @@ export default function Page() {
               흩어진 신호를 한 곳에서 분류·정리
             </span>
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <SubscribeBar sources={sources} onToggle={toggleSource} />
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -130,7 +132,7 @@ export default function Page() {
                 <button
                   type="button"
                   onClick={stopTriage}
-                  className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm font-medium text-muted hover:text-ink"
+                  className="press focusable rounded-lg border border-line bg-surface px-4 py-1.5 text-sm font-medium text-muted transition hover:text-ink"
                 >
                   중지
                 </button>
@@ -139,7 +141,7 @@ export default function Page() {
                   type="button"
                   onClick={runTriage}
                   disabled={untriaged === 0}
-                  className="rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-accent-ink transition hover:opacity-90 disabled:opacity-40"
+                  className="press focusable rounded-lg bg-accent px-5 py-1.5 text-sm font-medium text-accent-ink transition hover:bg-accent-hover disabled:opacity-40"
                 >
                   AI 트리아지 실행
                 </button>
@@ -154,7 +156,7 @@ export default function Page() {
           </div>
         </section>
 
-        <aside className="flex min-h-[45vh] flex-col rounded-2xl border border-line bg-surface-2 p-4 lg:min-h-0">
+        <aside className="surface flex min-h-[45vh] flex-col rounded-xl p-5 lg:min-h-0">
           <TodoPanel
             todos={todos}
             onToggle={toggleTodo}
@@ -166,12 +168,12 @@ export default function Page() {
 
       {undo && (
         <div className="pointer-events-none fixed inset-x-0 bottom-5 flex justify-center">
-          <div className="pointer-events-auto flex items-center gap-3 rounded-full bg-ink px-4 py-2 text-sm text-white shadow-lg">
+          <div className="surface-dark pointer-events-auto flex items-center gap-3 rounded-xl px-5 py-2.5 text-sm text-ink rest-shadow">
             <span>할 일을 삭제했어요</span>
             <button
               type="button"
               onClick={undoDelete}
-              className="font-semibold text-emerald-300 hover:underline"
+              className="font-medium text-accent-hover hover:underline"
             >
               실행취소
             </button>

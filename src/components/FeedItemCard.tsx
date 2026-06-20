@@ -25,7 +25,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
 
   return (
     <article
-      className="rounded-xl border border-line bg-surface p-3.5 shadow-sm transition hover:shadow"
+      className="surface rounded-xl p-4 transition"
       style={{ borderLeft: `3px solid ${meta.color}` }}
     >
       <header className="flex items-center gap-2 text-xs text-faint">
@@ -73,7 +73,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
           href={item.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-medium text-accent hover:underline"
+          className="text-sm font-normal text-accent hover:underline"
         >
           원본 열기 ↗
         </a>
@@ -81,7 +81,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
           <button
             type="button"
             onClick={openApproval}
-            className="ml-auto rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-accent-ink transition hover:opacity-90"
+            className="press focusable ml-auto rounded-lg bg-accent px-4 py-1.5 text-sm font-medium text-accent-ink transition hover:bg-accent-hover"
           >
             Todo로 추가
           </button>
@@ -89,7 +89,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
       </footer>
 
       {draft !== null && (
-        <div className="mt-3 rounded-lg border border-accent-weak bg-accent-weak/60 p-2.5">
+        <div className="mt-3 rounded-xl border border-line bg-surface-2 p-3">
           <label className="text-[11px] font-medium uppercase tracking-wide text-accent">
             검토 후 승인 — 할 일 문구를 수정할 수 있어요
           </label>
@@ -98,7 +98,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
             onChange={(e) => setDraft(e.target.value)}
             rows={2}
             autoFocus
-            className="mt-1.5 w-full resize-none rounded-md border border-line bg-surface px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent"
+            className="focusable mt-1.5 w-full resize-none rounded-lg border border-line bg-surface px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent"
           />
           <div className="mt-2 flex justify-end gap-2">
             <button
@@ -112,7 +112,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
               type="button"
               onClick={approve}
               disabled={!draft.trim()}
-              className="rounded-md bg-accent px-3 py-1 text-sm font-medium text-accent-ink disabled:opacity-40"
+              className="press focusable rounded-lg bg-accent px-4 py-1 text-sm font-medium text-accent-ink transition hover:bg-accent-hover disabled:opacity-40"
             >
               승인하고 추가
             </button>

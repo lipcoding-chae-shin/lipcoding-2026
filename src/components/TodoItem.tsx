@@ -22,7 +22,7 @@ export default function TodoItem({ todo, onToggle, onEdit, onDelete }: Props) {
   };
 
   return (
-    <li className="group flex items-start gap-2.5 rounded-lg border border-line bg-surface px-3 py-2.5 shadow-sm">
+    <li className="group surface flex items-start gap-2.5 rounded-xl px-3 py-2.5">
       <button
         type="button"
         role="checkbox"
@@ -62,7 +62,7 @@ export default function TodoItem({ todo, onToggle, onEdit, onDelete }: Props) {
                 setEditing(false);
               }
             }}
-            className="w-full rounded-md border border-accent bg-surface px-2 py-1 text-sm text-ink outline-none"
+            className="focusable w-full rounded-md border border-accent bg-surface px-2 py-1 text-sm text-ink outline-none"
           />
         ) : (
           <button
