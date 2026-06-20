@@ -20,3 +20,8 @@ out/
 # logs / os
 *.log
 .DS_Store
+
+# next.js extras
+*.tsbuildinfo
+next-env.d.ts
+.vercel
