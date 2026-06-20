@@ -36,23 +36,35 @@ export default function Page() {
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 40; // ~4min ceiling at 6s intervals
+
+    const load = async (isFirst: boolean) => {
       try {
         const res = await fetch("/api/feed", { cache: "no-store" });
         if (!res.ok) throw new Error(`피드를 불러오지 못했어요 (HTTP ${res.status})`);
         const data: FeedResponse = await res.json();
-        if (!cancelled) {
-          setFeed(data.items);
-          setFeedError(null);
+        if (cancelled) return;
+        setFeed(data.items);
+        setFeedError(null);
+        // Keep polling while the agent is still triaging items in the background.
+        const stillTriaging = data.items.some((i) => !i.triaged);
+        if (stillTriaging && attempts < MAX_ATTEMPTS) {
+          attempts += 1;
+          timer = setTimeout(() => load(false), 6000);
         }
       } catch (err) {
         if (!cancelled) setFeedError((err as Error).message);
       } finally {
-        if (!cancelled) setFeedLoading(false);
+        if (!cancelled && isFirst) setFeedLoading(false);
       }
-    })();
+    };
+
+    load(true);
     return () => {
       cancelled = true;
+      if (timer) clearTimeout(timer);
     };
   }, []);
 
