@@ -59,9 +59,17 @@ export const TRIAGE_SYSTEM_MESSAGE = [
   "Process every item exactly once. Do not skip any item. Do not invent items.",
 ].join("\n");
 
+export interface TriageOptions {
+  /** Whether to attach the GitHub MCP server (extra latency). Default: true
+   *  when GITHUB_MCP_TOKEN is set. The eager feed path passes `false` because
+   *  GitHub items are already fetched directly via the REST source. */
+  github?: boolean;
+}
+
 export async function runTriage(
   items: RawItem[],
-  onDelta?: (text: string) => void
+  onDelta?: (text: string) => void,
+  opts: TriageOptions = {}
 ): Promise<TriageRunResult> {
   const collector = createCollector();
   // Explicitly resolve the bundled CLI: the SDK's own resolver fails under
@@ -72,7 +80,7 @@ export async function runTriage(
     cliPath ? { connection: RuntimeConnection.forStdio({ path: cliPath }) } : undefined
   );
   try {
-    const mcpServers = githubMcpServers();
+    const mcpServers = opts.github === false ? undefined : githubMcpServers();
     const availableTools = [
       "summarize_item",
       "tag_item",
