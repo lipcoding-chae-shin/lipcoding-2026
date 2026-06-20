@@ -5,12 +5,15 @@ import type { FeedItem, SubscribedSource, Todo } from "@/lib/types";
 import SubscribeBar from "@/components/SubscribeBar";
 import FeedList from "@/components/FeedList";
 import TodoPanel from "@/components/TodoPanel";
+import InsightFeed from "@/components/InsightFeed";
 import ThemeToggle from "@/components/ThemeToggle";
 import { SOURCES, getRawFeed } from "@/components/mock";
+import { getInsightFeed } from "@/components/insights";
 
 export default function Page() {
   const [sources, setSources] = useState<SubscribedSource[]>(SOURCES);
   const [feed] = useState<FeedItem[]>(getRawFeed);
+  const [insights] = useState(getInsightFeed);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [undo, setUndo] = useState<{ todo: Todo; index: number } | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -103,13 +106,19 @@ export default function Page() {
           </div>
         </section>
 
-        <aside className="surface flex min-h-[45vh] max-h-[72vh] flex-col rounded-xl p-5 lg:min-h-0 lg:max-h-none">
-          <TodoPanel
-            todos={todos}
-            onToggle={toggleTodo}
-            onEdit={editTodo}
-            onDelete={deleteTodo}
-          />
+        <aside className="flex min-h-0 flex-col gap-5 lg:overflow-hidden">
+          <section className="surface flex min-h-[40vh] max-h-[60vh] flex-col rounded-xl p-5 lg:min-h-0 lg:max-h-none lg:flex-[1.2]">
+            <TodoPanel
+              todos={todos}
+              onToggle={toggleTodo}
+              onEdit={editTodo}
+              onDelete={deleteTodo}
+            />
+          </section>
+
+          <section className="surface flex min-h-[40vh] max-h-[60vh] flex-col rounded-xl p-5 lg:min-h-0 lg:max-h-none lg:flex-1">
+            <InsightFeed items={insights} />
+          </section>
         </aside>
       </main>
 
