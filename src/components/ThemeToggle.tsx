@@ -17,7 +17,11 @@ function getTheme(): Theme {
 }
 
 function setTheme(next: Theme) {
-  document.documentElement.dataset.theme = next;
+  const d = document.documentElement;
+  d.dataset.theme = next;
+  d.style.colorScheme = next;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", next === "light" ? "#ffffff" : "#010102");
   try {
     localStorage.setItem("theme", next);
   } catch {}
