@@ -8,7 +8,12 @@ export async function GET(req: NextRequest) {
   if (!code) return NextResponse.redirect(new URL("/?gmail=error", req.url));
 
   const auth = oauthClient();
-  const { tokens } = await auth.getToken(code);
+  let tokens;
+  try {
+    ({ tokens } = await auth.getToken(code));
+  } catch {
+    return NextResponse.redirect(new URL("/?gmail=error", req.url));
+  }
   const res = NextResponse.redirect(new URL("/?gmail=connected", req.url));
   if (tokens.access_token) {
     res.cookies.set("g_access", tokens.access_token, {
