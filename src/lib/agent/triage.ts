@@ -3,11 +3,32 @@ import { azureProvider, azureModel } from "./copilot";
 import { createCollector, createTriageTools } from "./tools";
 import type { FeedItem, TriageResponse } from "../types";
 
-export function buildTriagePrompt(items: FeedItem[]): string {
+export function githubMcpServers() {
+  const token = process.env.GITHUB_MCP_TOKEN;
+  if (!token) return undefined;
+  return {
+    github: {
+      type: "http" as const,
+      url: "https://api.githubcopilot.com/mcp/",
+      headers: { Authorization: `Bearer ${token}` },
+      tools: ["*"],
+    },
+  };
+}
+
+export function buildTriagePrompt(items: FeedItem[], withGithub = false): string {
   const lines = items.map(
     (it) =>
       `- id=${it.id} | source=${it.source} | from=${it.author} | title: ${it.title}\n    body: ${it.body}`
   );
+  const githubLine = withGithub
+    ? [
+        "",
+        "Additionally, use the GitHub MCP tools to fetch the user's most recent " +
+          "notifications or review requests. For each, summarize_item and tag_item " +
+          "(use a synthetic id like 'github-<n>'), and create_todo if it needs action.",
+      ]
+    : [];
   return [
     "You are a productivity triage assistant.",
     "For EACH feed item listed below, perform these steps in order:",
@@ -18,6 +39,7 @@ export function buildTriagePrompt(items: FeedItem[]): string {
     "",
     "Feed items:",
     ...lines,
+    ...githubLine,
   ].join("\n");
 }
 
@@ -28,11 +50,13 @@ export async function runTriage(
   const collector = createCollector();
   const client = new CopilotClient();
   try {
+    const mcpServers = githubMcpServers();
     const session = await client.createSession({
       model: azureModel(),
       streaming: true,
       provider: azureProvider(),
       tools: createTriageTools(collector),
+      ...(mcpServers ? { mcpServers } : {}),
     });
 
     if (onDelta) {
@@ -41,7 +65,7 @@ export async function runTriage(
       });
     }
 
-    await session.sendAndWait({ prompt: buildTriagePrompt(items) });
+    await session.sendAndWait({ prompt: buildTriagePrompt(items, Boolean(mcpServers)) });
   } finally {
     await client.stop();
   }

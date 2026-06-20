@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildTriagePrompt } from "./triage";
+import { buildTriagePrompt, githubMcpServers } from "./triage";
 import type { FeedItem } from "../types";
 
 const items: FeedItem[] = [
@@ -13,5 +13,22 @@ describe("buildTriagePrompt", () => {
     expect(p).toContain("tag_item");
     expect(p).toContain("create_todo");
     expect(p).toContain("id=a1");
+  });
+});
+
+describe("githubMcpServers", () => {
+  it("returns undefined without a token", () => {
+    delete process.env.GITHUB_MCP_TOKEN;
+    expect(githubMcpServers()).toBeUndefined();
+  });
+  it("builds an http MCP config with the bearer token", () => {
+    process.env.GITHUB_MCP_TOKEN = "ghp_test";
+    const cfg = githubMcpServers()!;
+    expect(cfg.github).toMatchObject({
+      type: "http",
+      url: "https://api.githubcopilot.com/mcp/",
+      headers: { Authorization: "Bearer ghp_test" },
+      tools: ["*"],
+    });
   });
 });
