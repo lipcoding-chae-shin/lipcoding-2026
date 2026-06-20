@@ -22,9 +22,9 @@ export default function SubscribeBar({ sources, onToggle }: Props) {
             type="button"
             onClick={() => onToggle(s.source)}
             aria-pressed={s.connected}
-            className={`group inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm transition ${
+            className={`press group inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-sm transition ${
               s.connected
-                ? "glass text-ink"
+                ? "border border-line bg-surface text-ink"
                 : "border border-dashed border-line bg-transparent text-faint hover:text-muted"
             }`}
           >
