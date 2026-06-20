@@ -1,3 +1,40 @@
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+
+/**
+ * Absolute path to the bundled `@github/copilot` CLI (`index.js`).
+ *
+ * The SDK normally locates this itself, but its resolver
+ * (`import.meta.resolve` / `createRequire(__filename)`) fails under the
+ * Next.js (Turbopack) bundled runtime — it can't see the project's
+ * `node_modules`, so the agent throws and the feed silently degrades to
+ * canned summaries. We resolve the path explicitly and hand it to
+ * `CopilotClient` via `connection`.
+ *
+ * Resolution order:
+ *   1. `COPILOT_CLI_PATH` env override (honored by the SDK too).
+ *   2. Walk up from `process.cwd()` looking for
+ *      `node_modules/@github/copilot/index.js`.
+ *
+ * Returns `undefined` when not found, so non-Next.js callers fall back to
+ * the SDK's own resolution.
+ */
+export function copilotCliPath(): string | undefined {
+  const override = process.env.COPILOT_CLI_PATH;
+  if (override && existsSync(override)) return override;
+
+  let dir = process.cwd();
+  // Walk up the directory tree to support hoisted/monorepo layouts.
+  for (let i = 0; i < 10; i++) {
+    const candidate = join(dir, "node_modules", "@github", "copilot", "index.js");
+    if (existsSync(candidate)) return candidate;
+    const parent = dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return undefined;
+}
+
 export function azureProvider() {
   const baseUrl = process.env.AZURE_OPENAI_ENDPOINT;
   const apiKey = azureApiKey();
