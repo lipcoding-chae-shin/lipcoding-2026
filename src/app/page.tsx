@@ -98,12 +98,12 @@ export default function Page() {
             </span>
           </div>
 
-          <div className="scroll-thin min-h-0 pr-1 lg:flex-1 lg:overflow-y-auto">
+          <div className="scroll-thin min-h-0 max-h-[55vh] overflow-y-auto pr-1 lg:max-h-none lg:flex-1">
             <FeedList items={visibleFeed} onCreateTodo={createTodo} />
           </div>
         </section>
 
-        <aside className="surface flex min-h-[45vh] flex-col rounded-xl p-5 lg:min-h-0">
+        <aside className="surface flex min-h-[45vh] max-h-[72vh] flex-col rounded-xl p-5 lg:min-h-0 lg:max-h-none">
           <TodoPanel
             todos={todos}
             onToggle={toggleTodo}
