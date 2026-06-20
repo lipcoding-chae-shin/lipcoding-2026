@@ -16,7 +16,14 @@ export default function InsightCard({ item }: Props) {
       href={item.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="surface press focusable block rounded-xl p-3 transition hover:bg-surface-2"
+      className={`press focusable block rounded-xl p-3 transition ${
+        item.pinned
+          ? "border border-accent/40 bg-accent/5 ring-1 ring-accent/30 hover:bg-accent/10"
+          : "surface hover:bg-surface-2"
+      }`}
+      style={
+        item.pinned ? { borderLeft: `3px solid ${meta.color}` } : undefined
+      }
     >
       <header className="flex items-center gap-2">
         <span
@@ -33,15 +40,28 @@ export default function InsightCard({ item }: Props) {
             <p className="truncate text-[11px] text-faint">{item.handle}</p>
           )}
         </div>
-        <span
-          className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-          style={{ color: meta.color, backgroundColor: `${meta.color}1a` }}
-        >
-          {meta.label}
-        </span>
+        {item.badge ? (
+          <span
+            className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+            style={{ color: "#fff", backgroundColor: meta.color }}
+          >
+            {item.badge}
+          </span>
+        ) : (
+          <span
+            className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
+            style={{ color: meta.color, backgroundColor: `${meta.color}1a` }}
+          >
+            {meta.label}
+          </span>
+        )}
       </header>
 
-      <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-muted">
+      <p
+        className={`mt-2 text-[13px] leading-relaxed ${
+          item.pinned ? "text-ink" : "line-clamp-3 text-muted"
+        }`}
+      >
         {item.text}
       </p>
 
