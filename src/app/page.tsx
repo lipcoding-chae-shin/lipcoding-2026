@@ -1,10 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { FeedItem, Source, SubscribedSource, Todo } from "@/lib/types";
+import type { FeedItem, SubscribedSource, Todo } from "@/lib/types";
 import SubscribeBar from "@/components/SubscribeBar";
-import AddSourceModal from "@/components/AddSourceModal";
-import { SOURCE_META } from "@/components/sources";
 import FeedList from "@/components/FeedList";
 import TodoPanel from "@/components/TodoPanel";
 import InsightFeed from "@/components/InsightFeed";
@@ -19,12 +17,6 @@ export default function Page() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [undo, setUndo] = useState<{ todo: Todo; index: number } | null>(null);
   const undoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [sourceUndo, setSourceUndo] = useState<{
-    source: SubscribedSource;
-    index: number;
-  } | null>(null);
-  const sourceUndoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 
   const connected = new Set(
@@ -33,40 +25,12 @@ export default function Page() {
   const visibleFeed = feed.filter((i) => connected.has(i.source));
   const untriaged = visibleFeed.filter((i) => !i.triaged).length;
 
-  const toggleSource = (id: string) =>
+  const toggleSource = (source: SubscribedSource["source"]) =>
     setSources((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, connected: !s.connected } : s)),
+      prev.map((s) =>
+        s.source === source ? { ...s, connected: !s.connected } : s,
+      ),
     );
-
-  const addSource = (source: Source, identifier: string) => {
-    const meta = SOURCE_META[source];
-    const label = identifier ? `${meta.label} · ${identifier}` : meta.label;
-    setSources((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), source, label, connected: true },
-    ]);
-    setModalOpen(false);
-  };
-
-  const deleteSource = (id: string) => {
-    const index = sources.findIndex((s) => s.id === id);
-    if (index < 0) return;
-    const removed = sources[index];
-    setSources((prev) => prev.filter((s) => s.id !== id));
-    setSourceUndo({ source: removed, index });
-    if (sourceUndoTimer.current) clearTimeout(sourceUndoTimer.current);
-    sourceUndoTimer.current = setTimeout(() => setSourceUndo(null), 5000);
-  };
-
-  const undoSourceDelete = () => {
-    if (!sourceUndo) return;
-    setSources((prev) => {
-      const next = [...prev];
-      next.splice(Math.min(sourceUndo.index, next.length), 0, sourceUndo.source);
-      return next;
-    });
-    setSourceUndo(null);
-  };
 
   const createTodo = (item: FeedItem, text: string) => {
     const todo: Todo = {
@@ -118,12 +82,7 @@ export default function Page() {
             </span>
           </div>
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            <SubscribeBar
-              sources={sources}
-              onToggle={toggleSource}
-              onDelete={deleteSource}
-              onAdd={() => setModalOpen(true)}
-            />
+            <SubscribeBar sources={sources} onToggle={toggleSource} />
             <ThemeToggle />
           </div>
         </div>
@@ -142,13 +101,13 @@ export default function Page() {
             </span>
           </div>
 
-          <div className="scroll-thin min-h-0 pr-1 lg:flex-1 lg:overflow-y-auto">
+          <div className="scroll-thin min-h-0 max-h-[55vh] overflow-y-auto pr-1 lg:max-h-none lg:flex-1">
             <FeedList items={visibleFeed} onCreateTodo={createTodo} />
           </div>
         </section>
 
         <aside className="flex min-h-0 flex-col gap-5 lg:overflow-hidden">
-          <section className="surface flex min-h-[40vh] flex-col rounded-xl p-5 lg:min-h-0 lg:flex-[1.2]">
+          <section className="surface flex min-h-[40vh] max-h-[60vh] flex-col rounded-xl p-5 lg:min-h-0 lg:max-h-none lg:flex-[1.2]">
             <TodoPanel
               todos={todos}
               onToggle={toggleTodo}
@@ -157,7 +116,7 @@ export default function Page() {
             />
           </section>
 
-          <section className="surface flex min-h-[40vh] flex-col rounded-xl p-5 lg:min-h-0 lg:flex-1">
+          <section className="surface flex min-h-[40vh] max-h-[60vh] flex-col rounded-xl p-5 lg:min-h-0 lg:max-h-none lg:flex-1">
             <InsightFeed items={insights} />
           </section>
         </aside>
@@ -177,26 +136,6 @@ export default function Page() {
           </div>
         </div>
       )}
-      {sourceUndo && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-5 flex justify-center">
-          <div className="surface-dark pointer-events-auto flex items-center gap-3 rounded-xl px-5 py-2.5 text-sm text-ink rest-shadow">
-            <span>구독을 삭제했어요</span>
-            <button
-              type="button"
-              onClick={undoSourceDelete}
-              className="font-medium text-accent-hover hover:underline"
-            >
-              실행취소
-            </button>
-          </div>
-        </div>
-      )}
-
-      <AddSourceModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onAdd={addSource}
-      />
     </div>
   );
 }
