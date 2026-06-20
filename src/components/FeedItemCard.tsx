@@ -25,7 +25,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
 
   return (
     <article
-      className="surface rounded-[18px] p-4 transition"
+      className="surface rounded-xl p-4 transition"
       style={{ borderLeft: `3px solid ${meta.color}` }}
     >
       <header className="flex items-center gap-2 text-xs text-faint">
@@ -81,7 +81,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
           <button
             type="button"
             onClick={openApproval}
-            className="press focusable ml-auto rounded-full bg-accent px-4 py-1.5 text-sm font-normal text-accent-ink transition hover:bg-accent-focus"
+            className="press focusable ml-auto rounded-lg bg-accent px-4 py-1.5 text-sm font-medium text-accent-ink transition hover:bg-accent-hover"
           >
             Todo로 추가
           </button>
@@ -112,7 +112,7 @@ export default function FeedItemCard({ item, onCreateTodo }: Props) {
               type="button"
               onClick={approve}
               disabled={!draft.trim()}
-              className="press focusable rounded-full bg-accent px-4 py-1 text-sm font-normal text-accent-ink transition hover:bg-accent-focus disabled:opacity-40"
+              className="press focusable rounded-lg bg-accent px-4 py-1 text-sm font-medium text-accent-ink transition hover:bg-accent-hover disabled:opacity-40"
             >
               승인하고 추가
             </button>

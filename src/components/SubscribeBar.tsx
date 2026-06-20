@@ -24,8 +24,8 @@ export default function SubscribeBar({ sources, onToggle }: Props) {
             aria-pressed={s.connected}
             className={`press group inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-sm transition ${
               s.connected
-                ? "border border-line bg-surface text-ink"
-                : "border border-dashed border-line bg-transparent text-faint hover:text-muted"
+                ? "border border-line bg-surface-2 text-ink"
+                : "border border-line bg-transparent text-faint hover:text-muted"
             }`}
           >
             <span
