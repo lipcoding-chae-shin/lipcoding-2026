@@ -3,11 +3,20 @@
  * FROZEN INTERFACE — change only after a one-line agreement between both devs.
  */
 
-export type Source = "gmail" | "github" | "news";
+export type Source =
+  | "gmail"
+  | "slack"
+  | "navermail"
+  | "github"
+  | "notion"
+  | "discord"
+  | "news";
 
 export type Tag = "Task" | "Info";
 
 export interface SubscribedSource {
+  /** Unique per subscription instance (multiple of the same source allowed). */
+  id: string;
   source: Source;
   label: string;
   connected: boolean;
