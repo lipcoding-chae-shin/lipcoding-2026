@@ -142,9 +142,11 @@ export default function Page() {
       <header className="surface-frosted sticky top-0 z-20">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-5">
           <div className="flex items-baseline gap-2">
-            <h1 className="text-lg font-bold tracking-tight text-ink">Triage</h1>
+            <h1 className="text-lg font-bold tracking-tight text-ink">
+              <span aria-hidden className="mr-1">☕</span>커피
+            </h1>
             <span className="hidden text-xs text-faint sm:inline">
-              흩어진 신호를 한 곳에서 분류·정리
+              흩어진 피드들을 한 곳에서 분류·정리
             </span>
           </div>
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
